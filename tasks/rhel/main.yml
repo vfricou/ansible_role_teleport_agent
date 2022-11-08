@@ -1,0 +1,20 @@
+---
+- name: 'RHEL | Deploy teleport repository'
+  ansible.builtin.template:
+    src: etc/yum.repos.d/teleport.repo.j2
+    dest: '/etc/yum.repos.d/teleport.repo'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    backup: true
+  become: true
+  tags:
+    - always
+
+- name: 'RHEL | Teleport install'
+  ansible.builtin.package:
+    state: present
+    name: teleport
+  become: true
+  tags:
+    - install

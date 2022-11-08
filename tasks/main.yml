@@ -1,2 +1,4 @@
 ---
-# tasks file for roles/vfricou.teleport
+- name: 'Import RHEL tasks'
+  ansible.builtin.import_tasks: rhel/main.yml
+  when: ansible_os_family == 'RedHat'

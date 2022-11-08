@@ -1,0 +1,7 @@
+[teleport]
+baseurl=https://yum.releases.teleport.dev/rhel/{{ ansible_distribution_major_version }}/Teleport/{{ ansible_architecture }}/stable/v{{ teleport_version }}
+gpgkey=https://yum.releases.teleport.dev/gpg
+name=Gravitational Teleport packages
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1

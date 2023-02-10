@@ -1,0 +1,39 @@
+version: v2
+teleport:
+  nodename: {{ ansible_facts['hostname'] }}
+  data_dir: /var/lib/teleport
+  join_params:
+    token_name: {{ token }}
+    method: token
+  auth_servers:
+    - {{ teleport_cluster }}
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: {{ teleport_cluster_capin }}
+  diag_addr: ""
+auth_service:
+  enabled: "no"
+proxy_service:
+  enabled: "no"
+  https_keypairs: []
+  acme: {}
+ssh_service:
+  enabled: "yes"
+{% if teleport_node_labels is defined %}
+  labels:
+{% for label, value in teleport_node_labels.items() %}
+    {{ label }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% if teleport_node_commands is defined %}
+  commands:
+{% for name in teleport_node_commands %}
+    - name: {{ name }}
+{% for cmdkey, cmdvalue in teleport_node_commands[name].items() %}
+      {{ cmdkey }}: {{ cmdvalue }}
+{% endfor %}
+{% endfor %}
+{% endif %}

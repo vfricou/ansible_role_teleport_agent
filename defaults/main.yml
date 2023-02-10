@@ -1,3 +1,20 @@
 ---
-teleport_version: 11
-teleport_cluster_node: 'gate.example.org'
+# Define teleport major version to install or update
+teleport_major_version: 12
+# Define teleport cluster to connect
+teleport_cluster: 'gate.example.org:443'
+# Define cluster CA fingerprint
+# teleport_cluster_capin: 'sha256:xxxxxxxxxxxxxxxxxx'
+# Define token TTL
+teleport_token_ttl: '2m'
+# Define custom node labels
+#teleport_node_labels:  # noqa yaml[comments]
+#  env: dev
+# Define custom node commands
+teleport_node_commands:
+  hostname:
+    command: '[hostname]'
+    period: '1m0s'
+  version:
+    command: '[teleport,version]'
+    period: '1m0s'

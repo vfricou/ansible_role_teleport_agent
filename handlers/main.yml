@@ -1,2 +1,8 @@
 ---
 # handlers file for roles/vfricou.teleport
+- name: 'Restart teleport'
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    name: teleport
+  become: true

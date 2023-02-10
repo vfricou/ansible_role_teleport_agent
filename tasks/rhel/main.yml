@@ -8,13 +8,15 @@
     mode: '0644'
     backup: true
   become: true
+  when: "'teleport-cluster' not in group_names"
   tags:
     - always
 
-- name: 'RHEL | Teleport install'
+- name: 'RHEL | Teleport install'  # noqa package-latest
   ansible.builtin.package:
-    state: present
     name: teleport
+    state: latest
   become: true
   tags:
     - install
+    - update

@@ -1,0 +1,43 @@
+---
+- name: 'Configure | Generate token to link host to cluster'
+  block:
+    - name: 'Configure | Delete existing token to renew for current host'  # noqa command-instead-of-shell
+      ansible.builtin.shell: "tctl tokens rm {{ join_token }}"
+      when: join_token is defined
+      delegate_to: "{{ groups['teleport-cluster'][0] }}"
+      become: true
+      tags:
+        - install
+        - configure
+
+    - name: 'Configure | Generate a new node token'  # noqa command-instead-of-shell
+      ansible.builtin.shell: "tctl tokens add --ttl={{ teleport_token_ttl }} --type=node --format=json"
+      when: join_token is not defined
+      register: join_token
+      delegate_to: "{{ groups['teleport-cluster'][0] }}"
+      become: true
+      tags:
+        - install
+        - configure
+
+    - name: 'Configure | Set facts with token'
+      ansible.builtin.set_fact:
+        token: "{{ join_token.stdout | from_json | json_query('token') }}"
+      become: true
+      tags:
+        - install
+        - configure
+
+- name: 'Configure | Deploy configuration to host'
+  ansible.builtin.template:
+    dest: '/etc/teleport.yaml'
+    src: 'etc/teleport.yml.j2'
+    owner: 'root'
+    group: 'root'
+    mode: '0640'
+  become: true
+  when: "'teleport-cluster' not in group_names"
+  tags:
+    - install
+    - configure
+  notify: 'Restart teleport'

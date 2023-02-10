@@ -1,4 +1,16 @@
 ---
+- name: 'Import validator'
+  ansible.builtin.import_tasks: validator/main.yml
+  tags:
+    - always
+
 - name: 'Import RHEL tasks'
   ansible.builtin.import_tasks: rhel/main.yml
   when: ansible_os_family == 'RedHat'
+
+- name: 'Import Debian tasks'
+  ansible.builtin.import_tasks: debian/main.yml
+  when: ansible_os_family == 'Debian'
+
+- name: 'Import configure tasks'
+  ansible.builtin.import_tasks: configure/main.yml

@@ -1,4 +1,4 @@
-# Ansible Role: user_management
+# Ansible Role: teleport-agent
 
 # Disclaimer
 
@@ -9,13 +9,22 @@ The master branch is development branch. Use only release/* branches for product
 
 # Introduction
 
-This role is designed to perform teleport installation and configuration on GNU/Linux servers.  
+This role is designed to perform teleport agent installation and configuration for ssh access on GNU/Linux servers.  
 It's structured and do tasks according to my own requirements and production needs.  
 Feel free to fork and update this according to your requirements.
 
 # Supported OS
 
-**AlmaLinux** :
+**Debian** :
+- 10
+- 11
+
+**Ubuntu** :
+- 20.04
+- 22.04
+
+**RHEL**/**RockyLinux**/**AlmaLinux** :
+- 8
 - 9
 
 # Variables
@@ -40,18 +49,6 @@ To clearest and updated changelog, I encourage you to see pull requests with fla
 
 You could refer to milestones to full current roadmap.
 
-### v0.0.1
-
-Perform teleport agent installation and configuration with node token variable
-
 ### v1.0.0
 
 Perform teleport agent installation and configuration with dynamic cluster token generation.
-
-### v2.0.0
-
-Deploy teleport root cluster
-
-### v3.0.0
-
-Deploy teleport leaf cluster

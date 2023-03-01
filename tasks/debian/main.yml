@@ -1,23 +1,41 @@
 ---
+- name: 'Debian | Install required packages'
+  ansible.builtin.apt:
+    name:
+      - gpg
+      - apt-transport-https
+    state: present
+  become: true
+  tags:
+    - install
+    - update
+
 - name: 'Debian | Import teleport repository gpg key'
   ansible.builtin.apt_key:
     url: 'https://apt.releases.teleport.dev/gpg'
-    keyring: '/usr/share/keyrings/teleport-archive-keyring.gpg'
+    keyring: '/etc/apt/trusted.gpg.d/teleport-archive-keyring.gpg'
     state: present
   become: true
-  when: "'teleport-cluster' not in group_names"
   tags:
-    - always
-
+    - install
+    - update
 
 - name: 'Debian | Declare repository'
-  ansible.builtin.apt_repository:
-    repo: 'deb https://apt.releases.teleport.dev/{{ ansible_distribution.lower() }} {{ ansible_distribution_release }} stable/{{ teleport_major_version }}'
-    state: present
+  ansible.builtin.copy:
+    content: 'deb https://apt.releases.teleport.dev/{{ ansible_distribution.lower() }} {{ ansible_distribution_release }} stable/v{{ teleport_major_version }}'
+    dest: '/etc/apt/sources.list.d/teleport.list'
   become: true
-  when: "'teleport-cluster' not in group_names"
   tags:
-    - always
+    - install
+    - update
+
+- name: 'Debian | Update apt cache'
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  tags:
+    - install
+    - update
 
 - name: 'Debian | Install or update teleport' ## noqa package-latest
   ansible.builtin.apt:

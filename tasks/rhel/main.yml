@@ -10,7 +10,8 @@
   become: true
   when: "'teleport-cluster' not in group_names"
   tags:
-    - always
+    - install
+    - update
 
 - name: 'RHEL | Teleport install'  # noqa package-latest
   ansible.builtin.package:

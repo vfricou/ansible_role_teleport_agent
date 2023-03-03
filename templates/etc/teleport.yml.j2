@@ -6,7 +6,9 @@ teleport:
     token_name: {{ token }}
     method: token
   auth_servers:
-    - {{ teleport_cluster }}
+{% for auth_serv in teleport_cluster %}
+    - '{{ auth_serv }}'
+{% endfor %}
   log:
     output: stderr
     severity: INFO

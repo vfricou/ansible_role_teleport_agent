@@ -1,19 +1,4 @@
 ---
 # handlers file for roles/vfricou.teleport
 - name: 'Restart teleport'
-  ansible.builtin.systemd:
-    state: restarted
-    enabled: true
-    name: teleport
-  become: true
-
-- name: 'Restart teleport on update'
-  ansible.builtin.systemd:
-    state: restarted
-    enabled: true
-    name: teleport
-    no_block: true
-  async: 1
-  poll: 1
-  ignore_errors: true
-  become: true
+  ansible.builtin.include_tasks: handlers_tasks/teleport.yml

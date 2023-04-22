@@ -18,7 +18,7 @@
     name: teleport
     state: latest
   become: true
-  notify: "Restart teleport on update"
+  notify: "Restart teleport"
   tags:
     - install
     - update

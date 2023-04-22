@@ -4,13 +4,13 @@
     - install
     - enroll
   block:
-    - name: 'Configure | Delete existing token to renew for current host'  # noqa command-instead-of-shell
+    - name: 'Configure | Delete existing token to renew for current host'  # noqa command-instead-of-shell no-changed-when
       ansible.builtin.shell: "tctl tokens rm {{ join_token }}"
       when: join_token is defined
       delegate_to: "{{ groups['teleport-cluster'][0] }}"
       become: true
 
-    - name: 'Configure | Generate a new node token'  # noqa command-instead-of-shell
+    - name: 'Configure | Generate a new node token'  # noqa command-instead-of-shell no-changed-when
       ansible.builtin.shell: "tctl tokens add --ttl={{ teleport_token_ttl }} --type=node --format=json"
       when: join_token is not defined
       register: join_token
@@ -46,7 +46,7 @@
 
     - name: 'Configure | Decode and store configuration as variable'
       ansible.builtin.set_fact:
-        teleport_config_content: "{{ teleport_config_slurp.content | b64decode | from_yaml  }}"
+        teleport_config_content: "{{ teleport_config_slurp.content | b64decode | from_yaml }}"
 
     - name: 'Configure | Set token with existing token'
       ansible.builtin.set_fact:
@@ -62,6 +62,6 @@
         group: 'root'
         mode: '0640'
       become: true
-      notify: 'Restart teleport on update'
+      notify: 'Restart teleport'
       when:
         - "'teleport-cluster' not in group_names"

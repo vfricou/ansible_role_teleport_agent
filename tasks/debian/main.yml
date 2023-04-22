@@ -24,6 +24,9 @@
   ansible.builtin.copy:
     content: 'deb https://apt.releases.teleport.dev/{{ ansible_distribution.lower() }} {{ ansible_distribution_release }} stable/v{{ teleport_major_version }}'
     dest: '/etc/apt/sources.list.d/teleport.list'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
   become: true
   tags:
     - install
@@ -43,7 +46,7 @@
       - teleport
     state: latest
   become: true
-  notify: "Restart teleport on update"
+  notify: "Restart teleport"
   tags:
     - install
     - update

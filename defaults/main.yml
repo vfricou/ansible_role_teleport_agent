@@ -2,7 +2,8 @@
 # Define teleport major version to install or update
 teleport_major_version: 12
 # Define teleport cluster to connect
-teleport_cluster: 'gate.example.org:443'
+teleport_cluster:
+  - 'gate.example.org:443'
 # Define cluster CA fingerprint
 # teleport_cluster_capin: 'sha256:xxxxxxxxxxxxxxxxxx'
 # Define token TTL

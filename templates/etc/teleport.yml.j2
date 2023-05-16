@@ -1,14 +1,11 @@
-version: v2
+version: v3
 teleport:
   nodename: {{ ansible_facts['hostname'] }}
   data_dir: /var/lib/teleport
   join_params:
     token_name: {{ token }}
     method: token
-  auth_servers:
-{% for auth_serv in teleport_cluster %}
-    - '{{ auth_serv }}'
-{% endfor %}
+  auth_server: '{{ teleport_cluster }}'
   log:
     output: stderr
     severity: INFO

@@ -1,52 +1,59 @@
 ---
 - name: 'Debian | Install required packages'
+  become: true
+  become_user: 'root'
+  tags:
+    - install
+    - update
   ansible.builtin.apt:
     name:
       - gpg
       - apt-transport-https
     state: present
+
+
+- name: 'Debian | Import teleport repository gpg key'
   become: true
+  become_user: 'root'
   tags:
     - install
     - update
-
-- name: 'Debian | Import teleport repository gpg key'
   ansible.builtin.apt_key:
     url: 'https://apt.releases.teleport.dev/gpg'
     keyring: '/etc/apt/trusted.gpg.d/teleport-archive-keyring.gpg'
     state: present
+
+
+- name: 'Debian | Declare repository'
   become: true
+  become_user: 'root'
   tags:
     - install
     - update
-
-- name: 'Debian | Declare repository'
   ansible.builtin.copy:
     content: 'deb https://apt.releases.teleport.dev/{{ ansible_distribution.lower() }} {{ ansible_distribution_release }} stable/v{{ teleport_major_version }}'
     dest: '/etc/apt/sources.list.d/teleport.list'
     owner: 'root'
     group: 'root'
     mode: '0644'
-  become: true
-  tags:
-    - install
-    - update
 
 - name: 'Debian | Update apt cache'
-  ansible.builtin.apt:
-    update_cache: true
   become: true
+  become_user: 'root'
   tags:
     - install
     - update
+  ansible.builtin.apt:
+    update_cache: true
 
 - name: 'Debian | Install or update teleport' ## noqa package-latest
-  ansible.builtin.apt:
-    name:
-      - teleport
-    state: latest
   become: true
+  become_user: 'root'
   notify: "Restart teleport"
   tags:
     - install
     - update
+  ansible.builtin.apt:
+    name:
+      - teleport
+    state: latest

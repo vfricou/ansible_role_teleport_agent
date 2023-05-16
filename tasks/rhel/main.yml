@@ -1,5 +1,11 @@
 ---
 - name: 'RHEL | Deploy teleport repository'
+  become: true
+  become_user: 'root'
+  when: "'teleport-cluster' not in group_names"
+  tags:
+    - install
+    - update
   ansible.builtin.template:
     src: etc/yum.repos.d/teleport.repo.j2
     dest: '/etc/yum.repos.d/teleport.repo'
@@ -7,18 +13,15 @@
     group: 'root'
     mode: '0644'
     backup: true
-  become: true
-  when: "'teleport-cluster' not in group_names"
-  tags:
-    - install
-    - update
 
 - name: 'RHEL | Teleport install'  # noqa package-latest
-  ansible.builtin.package:
-    name: teleport
-    state: latest
   become: true
+  become_user: 'root'
   notify: "Restart teleport"
   tags:
     - install
     - update
+  ansible.builtin.package:
+    name: teleport
+    state: latest
+

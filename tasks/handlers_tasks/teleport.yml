@@ -1,5 +1,15 @@
 ---
+- name: 'Handlers Task | Enable teleport at boot'
+  become: true
+  become_user: 'root'
+  ansible.builtin.systemd:
+    name: teleport
+    enabled: yes
+    daemon_reload: yes
+
 - name: 'Handlers Task | Restart teleport'
+  become: true
+  become_user: 'root'
   ansible.builtin.shell: "systemctl restart teleport.service"
   async: 1
   poll: 0

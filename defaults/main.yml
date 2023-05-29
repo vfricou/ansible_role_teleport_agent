@@ -19,3 +19,6 @@ teleport_node_commands:
   version:
     command: '[teleport,version]'
     period: '1m0s'
+
+# Firewallconfigurations
+fwl_active_zone: 'public'

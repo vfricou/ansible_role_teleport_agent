@@ -1,0 +1,48 @@
+---
+- name: 'Postinstall | Stat if firewalld is active'
+  tags:
+    - install
+    - configure
+    - firewall
+  register: firewalld_status
+  ansible.builtin.systemd:
+    name: firewalld
+
+- name: 'Postinstall | Manage firewalld'
+  become: true
+  become_user: 'root'
+  tags:
+    - install
+    - configure
+    - firewall
+  when: firewalld_status.status.ActiveState == 'active'
+  block:
+    - name: 'Postinstall | Ensure teleport service is defined into firewalld'
+      register: fwl_service_add
+      ansible.builtin.copy:
+        dest: '/etc/firewalld/services/teleport-node.xml'
+        content: |
+          <?xml version="1.0" encoding="utf-8"?>
+          <service>
+            <short>Teleport-node</short>
+            <description>Teleport is a zero trust access solution to connect and interact with SSH, RDP, Kube cluster, Databases and Applications.</description>
+            <port port="3022" protocol="tcp"/>
+          </service>
+        owner: 'root'
+        group: 'root'
+        seuser: system_u
+        serole: object_r
+        setype: lib_t
+        selevel: s0
+
+    - name: 'Postinstall | Force firewalld configuration reload'
+      when: fwl_service_add.changed
+      ansible.builtin.command: 'firewall-cmd --reload'
+
+    - name: 'Postinstall | Open firewall to teleport auth server'
+      ansible.posix.firewalld:
+        rich_rule: "rule family=ipv4 source address={{ hostvars[groups['teleport-cluster'][0]]['ansible_host'] }}/32 service name=teleport-node accept"
+        zone: '{{ fwl_active_zone }}'
+        state: enabled
+        permanent: true
+        immediate: true

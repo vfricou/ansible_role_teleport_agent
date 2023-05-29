@@ -14,3 +14,6 @@
 
 - name: 'Import configure tasks'
   ansible.builtin.import_tasks: configure/main.yml
+
+- name: 'Import postinstall tasks'
+  ansible.builtin.import_tasks: postinstall/main.yml

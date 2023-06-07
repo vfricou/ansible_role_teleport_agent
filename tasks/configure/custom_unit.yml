@@ -1,0 +1,36 @@
+---
+- name: 'Configure | Custom_unit | Copy teleport unit configuration'
+  ansible.builtin.copy:
+    remote_src: true
+    src: '/usr/lib/systemd/system/teleport.service'
+    dest: '/etc/systemd/system/{{ teleport_unit_name }}.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    seuser: 'system_u'
+    serole: 'object_r'
+    setype: 'systemd_unit_file_t'
+    selevel: 's0'
+
+- name: 'Configure | Custom_unit | Create teleport data folder'
+  ansible.builtin.file:
+    path: '/var/lib/{{ teleport_unit_name }}'
+    state: directory
+    owner: 'root'
+    group: 'root'
+    mode: '0700'
+    seuser: 'system_u'
+    serole: 'object_r'
+    setype: 'var_lib_t'
+    selevel: 's0'
+
+- name: 'Configure | Custom_unit | Set fact with existing unit datas'
+  notify: 'Restart teleport'
+  loop:
+    - { rex: '\/etc\/default\/teleport', repl: '/etc/default/{{ teleport_unit_name }}' }
+    - { rex: '\/run\/teleport\.pid', repl: '/run/{{ teleport_unit_name }}' }
+    - { rex: ' start ', repl: ' start --config=/etc/{{ teleport_unit_name }}.yaml ' }
+  ansible.builtin.replace:
+    regexp: '{{ item.rex }}'
+    replace: '{{ item.repl }}'
+    path: '/etc/systemd/system/{{ teleport_unit_name }}.service'

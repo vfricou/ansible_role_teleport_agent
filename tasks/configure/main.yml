@@ -1,4 +1,15 @@
 ---
+- name: 'Configure | Configure teleport for specific unit'
+  when:
+    - "teleport_unit_name != 'teleport'"
+    - "'teleport-cluster' not in group_names"
+  become: true
+  become_user: 'root'
+  tags:
+    - install
+    - configure
+  ansible.builtin.import_tasks: 'configure/custom_unit.yml'
+
 - name: 'Configure | Generate token to link host to cluster'
   become: true
   become_user: 'root'
@@ -15,7 +26,7 @@
       when: join_token is not defined
       register: join_token
       delegate_to: "{{ groups['teleport-cluster'][0] }}"
-      ansible.builtin.shell: "tctl tokens add --ttl={{ teleport_token_ttl }} --type=node --format=json"
+      ansible.builtin.shell: "tctl tokens add --ttl={{ teleport_token_ttl }} --type={{ teleport_token_type }} --format=json"
 
 
     - name: 'Configure | Set facts with token'
@@ -27,7 +38,7 @@
         - "'teleport-cluster' not in group_names"
       notify: 'Restart teleport'
       ansible.builtin.template:
-        dest: '/etc/teleport.yaml'
+        dest: '/etc/{{ teleport_unit_name }}.yaml'
         src: 'etc/teleport.yml.j2'
         owner: 'root'
         group: 'root'
@@ -42,7 +53,7 @@
       become: true
       become_user: 'root'
       ansible.builtin.slurp:
-        src: '/etc/teleport.yaml'
+        src: '/etc/{{ teleport_unit_name }}.yaml'
 
 
     - name: 'Configure | Decode and store configuration as variable'
@@ -62,7 +73,7 @@
       when:
         - "'teleport-cluster' not in group_names"
       ansible.builtin.template:
-        dest: '/etc/teleport.yaml'
+        dest: '/etc/{{ teleport_unit_name }}.yaml'
         src: 'etc/teleport.yml.j2'
         owner: 'root'
         group: 'root'

@@ -1,6 +1,6 @@
 ---
 # Define teleport major version to install or update
-teleport_major_version: 12
+teleport_major_version: 13
 # Define teleport cluster to connect
 teleport_cluster:
   - 'gate.example.org:443'
@@ -8,6 +8,10 @@ teleport_cluster:
 # teleport_cluster_capin: 'sha256:xxxxxxxxxxxxxxxxxx'
 # Define token TTL
 teleport_token_ttl: '2m'
+# Define generated token type
+teleport_token_type: 'node'
+# Define custom systemd unit teleport
+teleport_unit_name: 'teleport'
 # Define custom node labels
 #teleport_node_labels:  # noqa yaml[comments]
 #  env: dev

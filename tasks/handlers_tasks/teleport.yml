@@ -3,14 +3,14 @@
   become: true
   become_user: 'root'
   ansible.builtin.systemd:
-    name: teleport
+    name: '{{ teleport_unit_name }}'
     enabled: yes
     daemon_reload: yes
 
 - name: 'Handlers Task | Restart teleport'
   become: true
   become_user: 'root'
-  ansible.builtin.shell: "systemctl restart teleport.service"
+  ansible.builtin.shell: "systemctl restart {{ teleport_unit_name }}.service"
   async: 1
   poll: 0
   register: teleport_restart

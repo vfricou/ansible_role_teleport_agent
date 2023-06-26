@@ -5,7 +5,11 @@ teleport:
   join_params:
     token_name: {{ token }}
     method: token
+{% if 'app' in teleport_token_type %}
+  proxy_server: '{{ teleport_cluster }}'
+{% else %}
   auth_server: '{{ teleport_cluster }}'
+{% endif %}
   log:
     output: stderr
     severity: INFO

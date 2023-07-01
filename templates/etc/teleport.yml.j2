@@ -19,6 +19,21 @@ teleport:
   diag_addr: ""
 auth_service:
   enabled: "no"
+{% if teleport_app_configs is defined %}
+app_service:
+  enabled: true
+  debug_app: '{{ teleport_debug_app }}'
+  apps:
+{% for apps in teleport_app_configs %}
+    - name: "baal-cockpit"
+      uri: "http://127.0.0.1:9090"
+      public_addr: "cockpit.gate.opc.fricouv.eu"
+      labels:
+{% for key, value in apps['labels'].items() %}
+        {{ key }}: "{{ value }}"
+{% endfor %}
+{% endfor %}
+{% endif %}
 proxy_service:
   enabled: "no"
   https_keypairs: []

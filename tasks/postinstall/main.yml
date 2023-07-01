@@ -4,6 +4,9 @@
     - install
     - configure
     - firewall
+    - teleport_install
+    - teleport_configure
+    - teleport_firewall
   register: firewalld_status
   ansible.builtin.systemd:
     name: firewalld
@@ -15,6 +18,9 @@
     - install
     - configure
     - firewall
+    - teleport_install
+    - teleport_configure
+    - teleport_firewall
   when: firewalld_status.status.ActiveState == 'active'
   block:
     - name: 'Postinstall | Ensure teleport service is defined into firewalld'

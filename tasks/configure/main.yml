@@ -8,7 +8,22 @@
   tags:
     - install
     - configure
+    - teleport_install
+    - teleport_configure
   ansible.builtin.import_tasks: 'configure/custom_unit.yml'
+
+- name: 'Configure | Stat if existing teleport configuration'
+  become: true
+  become_user: 'root'
+  tags:
+    - install
+    - enroll
+    - teleport_install
+    - teleport_enroll
+  register: teleport_config_file
+  ansible.builtin.stat:
+    path: '/etc/{{ teleport_unit_name }}.yml'
+
 
 - name: 'Configure | Generate token to link host to cluster'
   become: true
@@ -16,6 +31,9 @@
   tags:
     - install
     - enroll
+    - teleport_install
+    - teleport_enroll
+  when: not teleport_config_file.stat.exists
   block:
     - name: 'Configure | Delete existing token to renew for current host'  # noqa command-instead-of-shell no-changed-when
       when: join_token is defined
@@ -47,6 +65,8 @@
 - name: 'Configure | Load and decode teleport configuration as yaml file'
   tags:
     - configure
+    - teleport_configure
+  when: teleport_config_file.stat.exists
   block:
     - name: 'Configure | Retreive existing configuration file content'
       register: teleport_config_slurp

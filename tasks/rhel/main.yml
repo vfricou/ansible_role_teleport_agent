@@ -6,6 +6,8 @@
   tags:
     - install
     - update
+    - teleport_install
+    - teleport_update
   ansible.builtin.template:
     src: etc/yum.repos.d/teleport.repo.j2
     dest: '/etc/yum.repos.d/teleport.repo'
@@ -21,6 +23,8 @@
   tags:
     - install
     - update
+    - teleport_install
+    - teleport_update
   ansible.builtin.package:
     name: teleport
     state: latest

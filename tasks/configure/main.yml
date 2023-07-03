@@ -20,9 +20,10 @@
     - enroll
     - teleport_install
     - teleport_enroll
+    - teleport_configure
   register: teleport_config_file
   ansible.builtin.stat:
-    path: '/etc/{{ teleport_unit_name }}.yml'
+    path: '/etc/{{ teleport_unit_name }}.yaml'
 
 
 - name: 'Configure | Generate token to link host to cluster'
@@ -75,7 +76,6 @@
       ansible.builtin.slurp:
         src: '/etc/{{ teleport_unit_name }}.yaml'
 
-
     - name: 'Configure | Decode and store configuration as variable'
       ansible.builtin.set_fact:
         teleport_config_content: "{{ teleport_config_slurp.content | b64decode | from_yaml }}"
@@ -97,13 +97,37 @@
     - name: 'Configure | Deploy configuration to host'
       become: true
       become_user: 'root'
-      notify: 'Restart teleport'
       when:
         - "'teleport-cluster' not in group_names"
-      ansible.builtin.template:
-        dest: '/etc/{{ teleport_unit_name }}.yaml'
-        src: 'etc/teleport.yml.j2'
-        owner: 'root'
-        group: 'root'
-        mode: '0640'
+      block:
+        - name: 'Configure | Deploy configuration to host'
+          notify: 'Restart teleport'
+          register: teleport_config_deployment_status
+          ansible.builtin.template:
+            dest: '/etc/{{ teleport_unit_name }}.yaml'
+            src: 'etc/teleport.yml.j2'
+            owner: 'root'
+            group: 'root'
+            mode: '0640'
+            backup: true
 
+        - name: 'Configure | Test configuration'
+          changed_when: false
+          when: teleport_config_deployment_status.changed
+          ansible.builtin.command:
+            cmd: '/usr/local/bin/teleport configure --test /etc/{{ teleport_unit_name }}.yaml'
+
+      rescue:
+        - name: 'Rescue | Configure | Revert teleport configuration'
+          ansible.builtin.copy:
+            remote_src: true
+            dest: '/etc/{{ teleport_unit_name }}.yaml'
+            src: '{{ teleport_config_deployment_status.backup_file }}'
+            owner: 'root'
+            group: 'root'
+            mode: '0640'
+
+        - name: 'Rescue | Configure | Remove backup configuration file'
+          ansible.builtin.file:
+            path: '{{ teleport_config_deployment_status.backup_file }}'
+            state: absent

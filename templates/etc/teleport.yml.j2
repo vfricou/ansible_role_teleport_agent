@@ -22,12 +22,12 @@ auth_service:
 {% if teleport_app_configs is defined %}
 app_service:
   enabled: true
-  debug_app: '{{ teleport_debug_app }}'
+  debug_app: {{ teleport_debug_app }}
   apps:
 {% for apps in teleport_app_configs %}
-    - name: "baal-cockpit"
-      uri: "http://127.0.0.1:9090"
-      public_addr: "cockpit.gate.opc.fricouv.eu"
+    - name: "{{ apps.name }}"
+      uri: "{{ apps.uri }}"
+      public_addr: "{{ apps.public_addr }}"
       labels:
 {% for key, value in apps['labels'].items() %}
         {{ key }}: "{{ value }}"

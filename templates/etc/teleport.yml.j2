@@ -28,6 +28,9 @@ app_service:
     - name: "{{ apps.name }}"
       uri: "{{ apps.uri }}"
       public_addr: "{{ apps.public_addr }}"
+{% if apps.insecure_skip_verify is defined and apps.insecure_skip_verify %}
+      insecure_skip_verify: true
+{% endif %}
       labels:
 {% for key, value in apps['labels'].items() %}
         {{ key }}: "{{ value }}"

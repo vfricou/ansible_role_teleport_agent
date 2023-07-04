@@ -1,6 +1,6 @@
 version: v3
 teleport:
-  nodename: {{ ansible_facts['hostname'] }}
+  nodename: {{ teleport_node_name | default(ansible_facts['hostname']) }}
   data_dir: /var/lib/{{ teleport_unit_name }}
   join_params:
     token_name: {{ token }}

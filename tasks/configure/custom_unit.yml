@@ -29,7 +29,7 @@
   loop:
     - { rex: '\/etc\/default\/teleport', repl: '/etc/default/{{ teleport_unit_name }}' }
     - { rex: '\/run\/teleport\.pid', repl: '/run/{{ teleport_unit_name }}' }
-    - { rex: ' start ', repl: ' start --config=/etc/{{ teleport_unit_name }}.yaml ' }
+    - { rex: ' start --config=/etc/teleport.yaml ', repl: ' start --config=/etc/{{ teleport_unit_name }}.yaml ' }
   ansible.builtin.replace:
     regexp: '{{ item.rex }}'
     replace: '{{ item.repl }}'
